@@ -169,11 +169,11 @@ public class PassingParametersFactory {
         else if (sql_key.equals("use database")) {
             System.out.println("3)调用方法：进入数据库");
             UseDatabase.dbName = ls.get(1);
-            //if database illegal
-            if (!IsLegal.isDatabase()) {
+            if(!IsLegal.isDatabase()){
+                return "成功进入数据库"+UseDatabase.dbName;
+            }
                 UseDatabase.dbName = null;
                 return "数据库不存在";
-            }
 
         }
         else if (sql_key.equals("create database")) {

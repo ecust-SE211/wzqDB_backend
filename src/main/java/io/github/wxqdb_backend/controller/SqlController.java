@@ -6,6 +6,7 @@ import io.github.wxqdb_backend.function.UseDatabase;
 import org.dom4j.DocumentException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.github.wxqdb_backend.function.Help;
 import java.io.IOException;
@@ -18,7 +19,7 @@ import java.util.Scanner;
 public class SqlController {
 
     @PostMapping("/execute")
-    public String execute(String sql) throws DocumentException, IOException {
+    public String execute(@RequestParam String sql) throws DocumentException, IOException {
             //System.out.println("请输入SQL语句：（您可以输入help以查询SQL语句帮助）");
 //            /*
 //             * 预处理:获得语句;
@@ -51,12 +52,9 @@ public class SqlController {
                     parameter_list = SingleSqlParserFactory.generateParser(sql);
                 } catch (Exception e) {
                     e.printStackTrace();//异常处理，不用管
-
                 }
                 //根据SQL的body部分，调用相应的功能模块
         return PassingParametersFactory.dealParametersWithReturn(parameter_list);
-
-
     }
 
 
