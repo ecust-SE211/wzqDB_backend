@@ -59,5 +59,5 @@ public class SqlController {
         return PassingParametersFactory.dealParametersWithReturn(parameter_list);
     }
 
-
+    
 }

@@ -15,9 +15,12 @@ public class ShowDatabases {
     public static String showDatabaseWithReturn(){
         File file=new File("./mydatabase");
         File[] files=file.listFiles();
-        //将所有数据库的名字存入一个String中
+        //将所有数据库的名字存入一个String中,跳过xml结尾格式文件
         String result="";
         for(int i=0;i<files.length;i++){
+            if(files[i].getName().endsWith(".xml")){
+                continue;
+            }
             result+=files[i].getName();
             if(i!=0 || i!=files.length-1)
             {
