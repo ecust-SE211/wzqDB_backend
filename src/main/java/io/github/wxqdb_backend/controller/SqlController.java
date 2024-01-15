@@ -4,10 +4,12 @@ import com.alibaba.fastjson.JSON;
 import io.github.wxqdb_backend.controller.dto.SqlDto;
 import io.github.wxqdb_backend.controller.tableStructure.TbColumn;
 import io.github.wxqdb_backend.controller.tableStructure.TbInfo;
+import io.github.wxqdb_backend.controller.tableStructure.UpdateData;
 import io.github.wxqdb_backend.factory.PassingParametersFactory;
 import io.github.wxqdb_backend.factory.SingleSqlParserFactory;
 import io.github.wxqdb_backend.function.SelectDataFromTable;
 import io.github.wxqdb_backend.function.ShowTables;
+import io.github.wxqdb_backend.function.UpdateDataFromTable;
 import org.dom4j.DocumentException;
 import org.springframework.web.bind.annotation.*;
 import io.github.wxqdb_backend.function.Help;
@@ -74,4 +76,10 @@ public class SqlController {
         return JSON.toJSONString(data);
     }
 
+    @PostMapping("/update")
+    public Boolean UpdateTableData(@RequestBody UpdateData data) throws DocumentException, IOException
+    {
+        Boolean result = UpdateDataFromTable.updateSingleData(data);
+        return result;
+    }
 }
