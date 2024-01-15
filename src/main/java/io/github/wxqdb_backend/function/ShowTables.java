@@ -52,7 +52,10 @@ public class ShowTables {
         File dir=new File("./mydatabase/"+dbname+"");
         for(File file:dir.listFiles()){//循环遍历file
             if(file.exists()){
-                Table tempTable=new Table();
+                Table tempTable=new Table();//初始化表
+                tempTable.tbColumnName=new ArrayList<>();
+                tempTable.tbColumnType=new ArrayList<>();
+                tempTable.iftbColumnKey=new ArrayList<>();
                 String tbName=file.getName();
                 File table=new File("./mydatabase/"+dbname+"/"+tbName+"/"+tbName+"-config.xml");
                 if(table.exists()){
