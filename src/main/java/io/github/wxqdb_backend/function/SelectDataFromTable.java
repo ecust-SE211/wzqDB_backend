@@ -158,7 +158,7 @@ public class SelectDataFromTable {
             Element rootElement = document.getRootElement();
             //获得节点名为tbName的节点List
             List<Node> nodes = rootElement.selectNodes(tbName);
-            ArrayList<Map<String, String>> resultList = new ArrayList<>();
+            List<Map<String, String>> resultList = new ArrayList<>();
 
             Map<String, String> tempMap1 = null;
             for (Node node : nodes) {

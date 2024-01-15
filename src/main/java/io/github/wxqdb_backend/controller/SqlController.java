@@ -1,5 +1,6 @@
 package io.github.wxqdb_backend.controller;
 
+import com.alibaba.fastjson.JSON;
 import io.github.wxqdb_backend.controller.dto.SqlDto;
 import io.github.wxqdb_backend.factory.PassingParametersFactory;
 import io.github.wxqdb_backend.factory.SingleSqlParserFactory;
@@ -12,6 +13,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static io.github.wxqdb_backend.function.SelectDataFromTable.selectFromTbWithReturnAllData;
 
 @RestController
 @RequestMapping("/sql")
@@ -59,9 +62,12 @@ public class SqlController {
     }
 
     @GetMapping("/{DbName}/{TbName}")
-    public List<Map<String, String>> GetTableData(@PathVariable String DbName, @PathVariable String TbName) throws DocumentException, IOException
+    public String GetTableData(@PathVariable String DbName, @PathVariable String TbName) throws DocumentException, IOException
     {
-        return null;//SelectDataFromTable.
+        List<Map<String, String>> data = SelectDataFromTable.selectFromTbWithReturnAllData(DbName,TbName);
+        String jsonInString= JSON.toJSONString(data);
+        return jsonInString;
     }
+    
 
 }
