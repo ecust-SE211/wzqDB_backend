@@ -48,8 +48,7 @@ public class ShowTables {
         if(IsLegal.isDatabaseEmpty()){
             return null;
         }
-        List<Table> tableList=new ArrayList<>() {
-        };
+        List<Table> tableList=new ArrayList<>();
         File dir=new File("./mydatabase/"+dbname+"");
         for(File file:dir.listFiles()){//循环遍历file
             if(file.exists()){

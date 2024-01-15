@@ -170,8 +170,8 @@ public class SelectDataFromTable {
                     Attribute attribute = (Attribute) i.next();
                     tempMap1.put(attribute.getName(), attribute.getText());
                 }
+                resultList.add(tempMap1);
             }
-            resultList.add(tempMap1);
             return resultList;
         }
         return null;//TODO:这边为多文件考虑返回值，待定
