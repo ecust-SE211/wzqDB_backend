@@ -2,9 +2,11 @@ package io.github.wxqdb_backend.controller;
 
 import com.alibaba.fastjson.JSON;
 import io.github.wxqdb_backend.controller.dto.SqlDto;
+import io.github.wxqdb_backend.controller.tableStructure.Table;
 import io.github.wxqdb_backend.factory.PassingParametersFactory;
 import io.github.wxqdb_backend.factory.SingleSqlParserFactory;
 import io.github.wxqdb_backend.function.SelectDataFromTable;
+import io.github.wxqdb_backend.function.ShowTables;
 import org.dom4j.DocumentException;
 import org.springframework.web.bind.annotation.*;
 import io.github.wxqdb_backend.function.Help;
@@ -68,6 +70,11 @@ public class SqlController {
         String jsonInString= JSON.toJSONString(data);
         return jsonInString;
     }
-    
+    @GetMapping("/{DbName}")
+    public String GetAllTableData(@PathVariable String DbName) throws DocumentException, IOException{
+        List<Table> data= ShowTables.showTableWithStruct(DbName);
+        String jsonInString= JSON.toJSONString(data);
+        return jsonInString;
+    }
 
 }
