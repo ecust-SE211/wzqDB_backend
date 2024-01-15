@@ -2,7 +2,8 @@ package io.github.wxqdb_backend.controller;
 
 import com.alibaba.fastjson.JSON;
 import io.github.wxqdb_backend.controller.dto.SqlDto;
-import io.github.wxqdb_backend.controller.tableStructure.Table;
+import io.github.wxqdb_backend.controller.tableStructure.TbColumn;
+import io.github.wxqdb_backend.controller.tableStructure.TbInfo;
 import io.github.wxqdb_backend.factory.PassingParametersFactory;
 import io.github.wxqdb_backend.factory.SingleSqlParserFactory;
 import io.github.wxqdb_backend.function.SelectDataFromTable;
@@ -15,8 +16,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static io.github.wxqdb_backend.function.SelectDataFromTable.selectFromTbWithReturnAllData;
 
 @RestController
 @RequestMapping("/sql")
@@ -67,14 +66,12 @@ public class SqlController {
     public String GetTableData(@PathVariable String DbName, @PathVariable String TbName) throws DocumentException, IOException
     {
         List<Map<String, String>> data = SelectDataFromTable.selectFromTbWithReturnAllData(DbName,TbName);
-        String jsonInString= JSON.toJSONString(data);
-        return jsonInString;
+        return JSON.toJSONString(data);
     }
     @GetMapping("/{DbName}")
     public String GetAllTableData(@PathVariable String DbName) throws DocumentException, IOException{
-        List<Table> data= ShowTables.showTableWithStruct(DbName);
-        String jsonInString= JSON.toJSONString(data);
-        return jsonInString;
+        List<TbInfo> data= ShowTables.showTableWithStruct(DbName);
+        return JSON.toJSONString(data);
     }
 
 }

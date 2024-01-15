@@ -44,7 +44,7 @@ public class SelectDataFromTable {
         //列名称不为空，则查询语句为select 列名称1，列名称2 from 表名 where 列名称=列值/select 列名称1，列名称2 from 表名
         else {
             //条件为空，则查询语句为select 列名称1，列名称2 from 表名
-            if (condition.size() == 0) {
+            if (condition.isEmpty()) {
                 selectFromTb(dbName, tbName, columns);
             }
             //条件不为空，则查询语句为select 列名称1，列名称2 from 表名 where 列名称=列值
@@ -97,7 +97,7 @@ public class SelectDataFromTable {
         //列名称不为空，则查询语句为select 列名称1，列名称2 from 表名 where 列名称=列值/select 列名称1，列名称2 from 表名
         else {
             //条件为空，则查询语句为select 列名称1，列名称2 from 表名
-            if (condition.size() == 0) {
+            if (condition.isEmpty()) {
 
                 return selectFromTbWithReturn(dbName, tbName, columns);
             }
@@ -136,8 +136,7 @@ public class SelectDataFromTable {
             for (Node node : nodes) {
                 Element elementNode = (Element) node;
                 List<Attribute> list = elementNode.attributes();
-                for (Iterator i = list.iterator(); i.hasNext(); ) {
-                    Attribute attribute = (Attribute) i.next();
+                for (Attribute attribute : list) {
                     System.out.print(attribute.getName() + "=" + attribute.getText() + " ");
                 }
                 System.out.println();
@@ -166,8 +165,7 @@ public class SelectDataFromTable {
                 List<Attribute> list = elementNode.attributes();
                 tempMap1 = new HashMap<String, String>();
 
-                for (Iterator i = list.iterator(); i.hasNext(); ) {
-                    Attribute attribute = (Attribute) i.next();
+                for (Attribute attribute : list) {
                     tempMap1.put(attribute.getName(), attribute.getText());
                 }
                 resultList.add(tempMap1);
@@ -176,7 +174,6 @@ public class SelectDataFromTable {
         }
         return null;//TODO:这边为多文件考虑返回值，待定
     }
-
 
 
     public static String selectFromTbWithReturn(String dbName, String tbName) throws DocumentException {
@@ -193,18 +190,17 @@ public class SelectDataFromTable {
             Element rootElement = document.getRootElement();
             //获得节点名为tbName的节点List
             List<Node> nodes = rootElement.selectNodes(tbName);
-            String result = "";
+            StringBuilder result = new StringBuilder();
             for (Node node : nodes) {
                 Element elementNode = (Element) node;
                 List<Attribute> list = elementNode.attributes();
-                for (Iterator i = list.iterator(); i.hasNext(); ) {
-                    Attribute attribute = (Attribute) i.next();
+                for (Attribute attribute : list) {
                     System.out.print(attribute.getName() + "=" + attribute.getText() + " ");
-                    result += attribute.getName() + "=" + attribute.getText();
+                    result.append(attribute.getName()).append("=").append(attribute.getText());
                 }
-                result += "\n";
+                result.append("\n");
             }
-            return result;
+            return result.toString();
         }
         return null;//TODO:这边还要做一些处理
     }
@@ -231,20 +227,18 @@ public class SelectDataFromTable {
             List<Node> nodes = rootElement.selectNodes(tbName);
 
             for (Node node : nodes) {
-                find=false;
+                find = false;
                 Element node1 = (Element) node;
                 List<Attribute> list = node1.attributes();
-                for (Iterator i = list.iterator(); i.hasNext(); ) {
-                    Attribute attribute = (Attribute) i.next();
+                for (Attribute attribute : list) {
                     if (attribute.getName().equals(condition[0]) && attribute.getText().equals(condition[1])) {
                         condition_find = true;
-                        find=true;
+                        find = true;
                         break;
                     }
                 }
                 if (find) {
-                    for (Iterator i = list.iterator(); i.hasNext(); ) {
-                        Attribute attribute = (Attribute) i.next();
+                    for (Attribute attribute : list) {
                         System.out.print(attribute.getName() + "=" + attribute.getText() + " ");
                     }
                     System.out.println();
@@ -252,7 +246,6 @@ public class SelectDataFromTable {
 
             }
         }
-
 
 
         if (!condition_find) {
@@ -281,34 +274,32 @@ public class SelectDataFromTable {
             Element rootElement = document.getRootElement();
 
             List<Node> nodes = rootElement.selectNodes(tbName);
-            String result = "";
+            StringBuilder result = new StringBuilder();
             for (Node node : nodes) {
-                find=false;
+                find = false;
                 Element node1 = (Element) node;
                 List<Attribute> list = node1.attributes();
-                for (Iterator i = list.iterator(); i.hasNext(); ) {
-                    Attribute attribute = (Attribute) i.next();
+                for (Attribute attribute : list) {
                     if (attribute.getName().equals(condition[0]) && attribute.getText().equals(condition[1])) {
                         condition_find = true;
-                        find=true;
+                        find = true;
                         break;
                     }
                 }
                 if (find) {
-                    for (Iterator i = list.iterator(); i.hasNext(); ) {
-                        Attribute attribute = (Attribute) i.next();
-                        result += attribute.getName() + "=" + attribute.getText() + " ";
+                    for (Attribute attribute : list) {
+                        result.append(attribute.getName()).append("=").append(attribute.getText()).append(" ");
                     }
-                    result += "\n";
+                    result.append("\n");
                 }
 
             }
-            return result;
+            return result.toString();
         }
         if (!condition_find) {
             return "未找到记录";
         }
-    return null;//TODO:这边还要做一些处理
+        return null;//TODO:这边还要做一些处理
     }
 
     //select 列名称1，列名称2 from 表名
@@ -332,10 +323,9 @@ public class SelectDataFromTable {
             for (Node node : nodes) {
                 Element node1 = (Element) node;
                 List<Attribute> list = node1.attributes();
-                for (Iterator i = list.iterator(); i.hasNext(); ) {
-                    Attribute attribute = (Attribute) i.next();
-                    for (int k = 0; k < tmp1.size(); k++) {
-                        if (attribute.getName().equals(tmp1.get(k))) {
+                for (Attribute attribute : list) {
+                    for (String s : tmp1) {
+                        if (attribute.getName().equals(s)) {
                             columns_find = true;
                             System.out.print(attribute.getName() + "=" + attribute.getText() + " ");
                             break;
@@ -372,10 +362,9 @@ public class SelectDataFromTable {
             for (Node node : nodes) {
                 Element node1 = (Element) node;
                 List<Attribute> list = node1.attributes();
-                for (Iterator i = list.iterator(); i.hasNext(); ) {
-                    Attribute attribute = (Attribute) i.next();
-                    for (int k = 0; k < tmp1.size(); k++) {
-                        if (attribute.getName().equals(tmp1.get(k))) {
+                for (Attribute attribute : list) {
+                    for (String s : tmp1) {
+                        if (attribute.getName().equals(s)) {
                             columns_find = true;
                             result += attribute.getName() + "=" + attribute.getText() + " ";
                             break;
@@ -414,22 +403,20 @@ public class SelectDataFromTable {
             List<Node> nodes = rootElement.selectNodes(tbName);
 
             for (Node node : nodes) {
-                find1=false;
+                find1 = false;
                 Element node1 = (Element) node;
                 List<Attribute> list = node1.attributes();
-                for (Iterator i = list.iterator(); i.hasNext(); ) {
-                    Attribute attribute = (Attribute) i.next();
+                for (Attribute attribute : list) {
                     if (attribute.getName().equals(condition[0]) && attribute.getText().equals(condition[1])) {
                         condition_find = true;
-                        find1=true;
+                        find1 = true;
                         break;
                     }
                 }
                 if (find1) {
-                    for (Iterator i = list.iterator(); i.hasNext(); ) {
-                        Attribute attribute = (Attribute) i.next();
-                        for (int k = 0; k < tmp1.size(); k++) {
-                            if (attribute.getName().equals(tmp1.get(k))) {
+                    for (Attribute attribute : list) {
+                        for (String s : tmp1) {
+                            if (attribute.getName().equals(s)) {
                                 element_find = true;
                                 System.out.print(attribute.getName() + "=" + attribute.getText() + " ");
                                 break;
@@ -471,14 +458,14 @@ public class SelectDataFromTable {
             List<Node> nodes = rootElement.selectNodes(tbName);
             String result = "";
             for (Node node : nodes) {
-                find1=false;
+                find1 = false;
                 Element node1 = (Element) node;
                 List<Attribute> list = node1.attributes();
                 for (Iterator i = list.iterator(); i.hasNext(); ) {
                     Attribute attribute = (Attribute) i.next();
                     if (attribute.getName().equals(condition[0]) && attribute.getText().equals(condition[1])) {
                         condition_find = true;
-                        find1=true;
+                        find1 = true;
                         break;
                     }
                 }
@@ -501,7 +488,7 @@ public class SelectDataFromTable {
         if (!condition_find) {
             return "未找到记录";
         }
-            return "未找到列";
+        return "未找到列";
     }
 
 
@@ -608,7 +595,7 @@ public class SelectDataFromTable {
             }
         }
         if (!condition_find) {
-            return  "查询失败,未找到记录";
+            return "查询失败,未找到记录";
 
         }
         if (condition_find && !element_find) {
@@ -664,7 +651,7 @@ public class SelectDataFromTable {
 
     }
 
-    public static String  selectWithIndexAndReturn(String dbName, String tbName, List<String> tmp1) throws DocumentException {
+    public static String selectWithIndexAndReturn(String dbName, String tbName, List<String> tmp1) throws DocumentException {
         //存where条件的condition数组
         String[] condition = tmp1.get(1).split("=");
         int key = Integer.parseInt(condition[1]);
@@ -700,7 +687,7 @@ public class SelectDataFromTable {
                 break;
             }
         }
-            return "查询失败,未找到记录";
+        return "查询失败,未找到记录";
 
     }
 
