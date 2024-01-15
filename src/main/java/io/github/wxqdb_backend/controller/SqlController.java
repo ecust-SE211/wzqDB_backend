@@ -3,16 +3,15 @@ package io.github.wxqdb_backend.controller;
 import io.github.wxqdb_backend.controller.dto.SqlDto;
 import io.github.wxqdb_backend.factory.PassingParametersFactory;
 import io.github.wxqdb_backend.factory.SingleSqlParserFactory;
-import io.github.wxqdb_backend.function.UseDatabase;
+import io.github.wxqdb_backend.function.SelectDataFromTable;
 import org.dom4j.DocumentException;
 import org.springframework.web.bind.annotation.*;
 import io.github.wxqdb_backend.function.Help;
-import org.springframework.web.util.HtmlUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/sql")
@@ -59,5 +58,10 @@ public class SqlController {
         return PassingParametersFactory.dealParametersWithReturn(parameter_list);
     }
 
-    
+    @GetMapping("/{DbName}/{TbName}")
+    public List<Map<String, String>> GetTableData(@PathVariable String DbName, @PathVariable String TbName) throws DocumentException, IOException
+    {
+        return null;//SelectDataFromTable.
+    }
+
 }

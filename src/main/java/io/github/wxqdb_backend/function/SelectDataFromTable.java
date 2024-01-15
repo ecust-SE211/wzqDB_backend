@@ -5,8 +5,8 @@ import org.dom4j.*;
 import org.dom4j.io.SAXReader;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+
 //TODO:处理其他带条件的查询语句
 public class SelectDataFromTable {
     //根据参数不同调用不同的查询方法
@@ -144,6 +144,40 @@ public class SelectDataFromTable {
             }
         }
     }
+
+    public static List<Map<String, String>> selectFromTbWithReturnAllData(String dbName, String tbName) throws DocumentException {
+        //若表存在，则得到最后一张子表的下标
+        String file_num = IsLegal.lastFileName(dbName, tbName);
+        for (int j = Integer.parseInt(file_num); j >= 0; j--) {
+            String num = "" + j;
+            File file = new File("./mydatabase/" + dbName + "/" + tbName + "/" + tbName + num + ".xml");
+            //解析xml
+            SAXReader reader = new SAXReader();
+            Document document = reader.read(file);
+            //获得根节点
+            Element rootElement = document.getRootElement();
+            //获得节点名为tbName的节点List
+            List<Node> nodes = rootElement.selectNodes(tbName);
+            ArrayList<Map<String, String>> resultList = new ArrayList<>();
+
+            Map<String, String> tempMap1 = null;
+            for (Node node : nodes) {
+                Element elementNode = (Element) node;
+                List<Attribute> list = elementNode.attributes();
+                tempMap1 = new HashMap<String, String>();
+
+                for (Iterator i = list.iterator(); i.hasNext(); ) {
+                    Attribute attribute = (Attribute) i.next();
+                    tempMap1.put(attribute.getName(), attribute.getText());
+                }
+            }
+            resultList.add(tempMap1);
+            return resultList;
+        }
+        return null;//TODO:这边为多文件考虑返回值，待定
+    }
+
+
 
     public static String selectFromTbWithReturn(String dbName, String tbName) throws DocumentException {
         //若表存在，则得到最后一张子表的下标
