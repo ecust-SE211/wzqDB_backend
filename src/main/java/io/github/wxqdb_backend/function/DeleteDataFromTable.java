@@ -56,6 +56,51 @@ public class DeleteDataFromTable {
             System.out.println("没有找到要删除的记录");
         }
     }
+
+    public static String deleteFromTableWithReturn(String dbName,String tbName,List<String> tmp) throws DocumentException, IOException {
+        //数据库是否为空
+        if (IsLegal.isDatabaseEmpty()) {
+            return "数据库为空";
+        }
+        //输出tmp列表
+
+        //表存在则返回物理层最后一张子表的下标，并得到配置文件
+        File config_file=IsLegal.isTable(dbName,tbName);
+        String write_file_last_num = IsLegal.lastFileName(dbName, tbName);
+        //获取where列名称//TODO:支持更多条件
+        String [] key_value=tmp.get(0).split("=");
+        String key=key_value[0];
+        //find标记是否找到记录
+        Boolean find = false;
+        //非主键查询删除
+        if(!IsLegal.isIndex(config_file,key)) {
+            for (int j = Integer.parseInt(write_file_last_num); j >= 0; j--) {//字符串转整数
+                //设置变量traverse_file用来遍历表的所有文件
+                String last_num = "" + j;
+                //创建写入对象，创建sax解析器，document对象，获得root节点
+                File file = new File("./mydatabase/" + dbName + "/" + tbName + "/" + tbName + last_num + ".xml");
+                find=delete(file,dbName,tbName,key_value,last_num);
+                if(find){
+                    return "删除记录成功";
+                }
+            }
+        }
+        //主键查询删除
+        else {
+            BPlusTree tree=CreateIndex.findTree(tbName);
+            String file_name=tree.search(Integer.parseInt(key_value[1]));
+            String num=file_name.substring(file_name.length()-1,file_name.length());
+            File file=new File("./mydatabase/"+dbName+"/"+tbName+"/"+file_name+".xml");
+            find=delete(file,dbName,tbName,key_value,num);
+            //删除数据后更新索引
+            if(find) {
+                CreateIndex.updateIndex_delete(tbName, key_value[1]);
+                return "删除记录成功";
+            }
+            //System.out.println("没有找到要删除的记录");
+        }
+        return "没有找到要删除的记录";
+    }
     //主键删除用delete方法
     public static boolean delete(File file,String dbName,String tbName,String[] key_value,String last_num) throws DocumentException, IOException {
         SAXReader reader = new SAXReader();

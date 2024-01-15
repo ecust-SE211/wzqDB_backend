@@ -16,4 +16,24 @@ public class ShowTables {
             }
         }
     }
+
+    public static String showTableWithReturn(String dbname){
+        //数据库是否为空
+        if(IsLegal.isDatabaseEmpty()){
+            return new String("数据库为空");
+        }
+        File dir=new File("./mydatabase/"+dbname+"");
+        String result=new String("");
+        for(File file:dir.listFiles()){
+            if(file.exists()){
+                result=result+file.getName();
+                //两个之间加上换行符
+                if(!result.equals("")){
+                    result=result+"\n";
+                }
+
+            }
+        }
+        return result;
+    }
 }

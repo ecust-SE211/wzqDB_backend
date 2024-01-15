@@ -25,4 +25,25 @@ public class DropTable {
         System.out.println(tbName+ "表删除成功");
 
     }
+
+    public static String deleteTableWithReturn(String dbName, String tbName) throws DocumentException, IOException {
+        //判断数据库是否为空
+        if (IsLegal.isDatabaseEmpty()) {
+            return "数据库为空";
+        }
+        DropIndex.dropIndex(dbName,tbName);
+        //表存在则返回一个对象
+        File file = IsLegal.hasDir(dbName, tbName);
+        System.out.println(file.toString());
+        //删除整张表
+        File[] files = file.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            files[i].delete();
+        }
+        file.delete();
+        return tbName+ " 表删除成功";
+
+
+    }
+
 }

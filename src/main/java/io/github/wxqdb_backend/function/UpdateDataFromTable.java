@@ -50,6 +50,44 @@ public class UpdateDataFromTable {
         }
     }
 
+    public static String updateTableWithReturn(String dbName, String tbName, List<List<String>> tmp) throws DocumentException, IOException {
+        //数据库是否为空
+        if (IsLegal.isDatabaseEmpty()) {
+            return "数据库不存在";
+        }
+        //表存在则返回表的物理层最后一张子表的下标,得到配置文件
+        File config_file = IsLegal.isTable(dbName, tbName);
+        //find标记是否找到记录
+        Boolean find = false;
+        //tmp2表示where的列名称和列值
+        String[] tmp2 = tmp.get(1).get(0).split("=");
+        //key为where的列名称
+        String key=tmp2[0];
+        //是否是主键查询
+        if(IsLegal.isIndex(config_file,key)) {
+            BPlusTree tree=CreateIndex.findTree(tbName);
+            String file_name=tree.search(Integer.parseInt(key));
+            File file=new File("./mydatabase/"+dbName+"/"+tbName+"/"+file_name+".xml");
+            find=update(tbName,file,tmp,tmp2);
+            if(!find){
+                return "更新失败，未找到记录";
+            }
+        }
+        else {
+            //扫描所有文件,j记录文件下表,num用来遍历所有文件
+            String this_file = IsLegal.lastFileName(dbName, tbName);
+            for (int j = Integer.parseInt(this_file); j >= 0; j--) {
+                String num = "" + j;
+                File file = new File("./mydatabase/" + dbName + "/" + tbName + "/" + tbName + num + ".xml");
+                find=update(tbName,file,tmp,tmp2);
+                if(find){
+                    return "更新成功";
+                }
+            }
+        }
+        return "更新失败，未找到记录";
+v    }
+
     public static boolean update(String tbName,File file,List<List<String>> tmp,String[] tmp2) throws DocumentException, IOException {
         boolean find=false;
         //创建解析器，document对象，获得根节点

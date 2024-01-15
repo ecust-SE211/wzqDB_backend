@@ -71,4 +71,49 @@ public class CreateTable{
         //关闭流
         xmlWriter.close();
     }
+
+    public static String createTbWithReturn(String dbName, String tbName, List<String> tmp) throws IOException {
+
+        //判断数据库是否为空
+        if(IsLegal.isDatabaseEmpty()){
+            return new String("当前数据库为空");//TODO:可能需要改成异常处理的模式
+        }
+        //创建一张表的文件夹，逻辑上表示一张表
+        File tableFile=new File("./mydatabase/"+dbName+"/"+tbName+"");
+        if(tableFile.exists()){
+            String result=tbName+"表创建失败";
+            return result;
+
+        }
+        tableFile.mkdir();
+        //创建配置文件并设置根节点
+        File table=new File("./mydatabase/"+dbName+"/"+tbName+"/"+tbName+"-config.xml");
+        Document document = DocumentHelper.createDocument();
+        Element rootElem = document.addElement(tbName+"s");
+        //根节点的属性值为列名称=数据类型
+        for (int i = 0; i < tmp.size(); i++) {
+            String[] list=tmp.get(i).split(" ");
+            rootElem.addAttribute(list[0],list[1]);
+        }
+        //物理层第一张子表的下标为0
+        rootElem.addElement(tbName).setText("0");
+        //存储物理层可插入子表的下标
+        rootElem.addElement("insertables");
+        //记录是否建有索引
+        rootElem.addElement("index");
+        //记录主键名称
+        rootElem.addElement("index_name");
+        //写入操作
+        writeIO(table,document);
+
+        //创建表的物理层第一张子表
+        File first_file=new File("./mydatabase/"+dbName+"/"+tbName+"/"+tbName+"0.xml");
+        Document first_document=DocumentHelper.createDocument();
+        first_document.addElement(tbName+"s");
+        //写入操作
+        writeIO(first_file,first_document);
+        return new String(tbName+"表创建成功");
+
+
+    }
 }

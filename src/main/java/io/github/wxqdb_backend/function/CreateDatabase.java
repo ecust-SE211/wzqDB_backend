@@ -17,5 +17,16 @@ public class CreateDatabase {
         }
     }
 
-
+    public static String createDBWithReturn(String databaseName){
+        //创建数据库目录
+        File db=new File("./mydatabase/"+databaseName+"");
+        //判断数据库是否存在
+        if(!db.exists()){
+            db.mkdir();
+            return "数据库"+databaseName+"创建成功";
+        }
+        else{
+            return "数据库"+databaseName+"已经存在";
+        }
+    }
 }

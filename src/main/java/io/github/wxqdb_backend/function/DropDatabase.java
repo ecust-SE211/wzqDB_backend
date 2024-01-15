@@ -38,6 +38,27 @@ public class DropDatabase {
             }
         }
 
+    public static String deleteDBWithReturn(String dbname) throws IOException {
 
+        File file = new File("./mydatabase/" + dbname + "");
+        if (!file.exists()) {
+            return "数据库 "+ dbname + "不存在";
+        }
+        //若数据库中有表存在，则提示用户
+        if (file.listFiles().length > 0) {
+
+
+                File[] files = file.listFiles();
+                for (int i=0;i<files.length;i++) {
+                    files[i].delete();
+                }
+                file.delete();
+        }
+        //若数据库为空，直接删除
+        else {
+            file.delete();
+        }
+        return "数据库" + dbname + "删除成功";
+    }
 
 }
