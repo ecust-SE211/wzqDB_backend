@@ -22,27 +22,26 @@ public class UpdateDataFromTable {
         //tmp2表示where的列名称和列值
         String[] tmp2 = tmp.get(1).get(0).split("=");
         //key为where的列名称
-        String key=tmp2[0];
+        String key = tmp2[0];
         //是否是主键查询
-        if(IsLegal.isIndex(config_file,key)) {
-            BPlusTree tree=CreateIndex.findTree(tbName);
-            String file_name=tree.search(Integer.parseInt(key));
-            File file=new File("./mydatabase/"+dbName+"/"+tbName+"/"+file_name+".xml");
-            find=update(tbName,file,tmp,tmp2);
-            if(!find){
+        if (IsLegal.isIndex(config_file, key)) {
+            BPlusTree tree = CreateIndex.findTree(tbName);
+            String file_name = tree.search(Integer.parseInt(key));
+            File file = new File("./mydatabase/" + dbName + "/" + tbName + "/" + file_name + ".xml");
+            find = update(tbName, file, tmp, tmp2);
+            if (!find) {
                 System.out.println("更新失败，未找到记录");
             }
             //更新索引文件
 //            CreateIndex.updateIndex_update(tbName,key,tmp2[2]);
-        }
-        else {
+        } else {
             //扫描所有文件,j记录文件下表,num用来遍历所有文件
             String this_file = IsLegal.lastFileName(dbName, tbName);
             for (int j = Integer.parseInt(this_file); j >= 0; j--) {
                 String num = "" + j;
                 File file = new File("./mydatabase/" + dbName + "/" + tbName + "/" + tbName + num + ".xml");
-                find=update(tbName,file,tmp,tmp2);
-                if(find){
+                find = update(tbName, file, tmp, tmp2);
+                if (find) {
                     return;
                 }
             }
@@ -62,34 +61,33 @@ public class UpdateDataFromTable {
         //tmp2表示where的列名称和列值
         String[] tmp2 = tmp.get(1).get(0).split("=");
         //key为where的列名称
-        String key=tmp2[0];
+        String key = tmp2[0];
         //是否是主键查询
-        if(IsLegal.isIndex(config_file,key)) {
-            BPlusTree tree=CreateIndex.findTree(tbName);
-            String file_name=tree.search(Integer.parseInt(key));
-            File file=new File("./mydatabase/"+dbName+"/"+tbName+"/"+file_name+".xml");
-            find=update(tbName,file,tmp,tmp2);
-            if(!find){
+        if (IsLegal.isIndex(config_file, key)) {
+            BPlusTree tree = CreateIndex.findTree(tbName);
+            String file_name = tree.search(Integer.parseInt(key));
+            File file = new File("./mydatabase/" + dbName + "/" + tbName + "/" + file_name + ".xml");
+            find = update(tbName, file, tmp, tmp2);
+            if (!find) {
                 return "更新失败，未找到记录";
             }
-        }
-        else {
+        } else {
             //扫描所有文件,j记录文件下表,num用来遍历所有文件
             String this_file = IsLegal.lastFileName(dbName, tbName);
             for (int j = Integer.parseInt(this_file); j >= 0; j--) {
                 String num = "" + j;
                 File file = new File("./mydatabase/" + dbName + "/" + tbName + "/" + tbName + num + ".xml");
-                find=update(tbName,file,tmp,tmp2);
-                if(find){
+                find = update(tbName, file, tmp, tmp2);
+                if (find) {
                     return "更新成功";
                 }
             }
         }
         return "更新失败，未找到记录";
-v    }
+    }
 
-    public static boolean update(String tbName,File file,List<List<String>> tmp,String[] tmp2) throws DocumentException, IOException {
-        boolean find=false;
+    public static boolean update(String tbName, File file, List<List<String>> tmp, String[] tmp2) throws DocumentException, IOException {
+        boolean find = false;
         //创建解析器，document对象，获得根节点
         SAXReader reader = new SAXReader();
         Document document = reader.read(file);
@@ -117,15 +115,14 @@ v    }
                     }
                 }
                 //写入IO
-                CreateTable.writeIO(file,document);
+                CreateTable.writeIO(file, document);
                 System.out.println("更新成功");
                 unFindNum++;
             }
         }
-        if(unFindNum==nodes.size()){
+        if (unFindNum == nodes.size()) {
             return false;
-        }
-        else{
+        } else {
             return true;
         }
 

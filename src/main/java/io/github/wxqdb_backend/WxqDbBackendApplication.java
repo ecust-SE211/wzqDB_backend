@@ -21,7 +21,7 @@ public class WxqDbBackendApplication {
 
     public static void main(String[] args) throws IOException, DocumentException
     {
-        //SpringApplication.run(WxqDbBackendApplication.class, args);
+        SpringApplication.run(WxqDbBackendApplication.class, args);
 
         if (IsLegal.need_loadIndex()) {
             CreateIndex.loadIndex();
