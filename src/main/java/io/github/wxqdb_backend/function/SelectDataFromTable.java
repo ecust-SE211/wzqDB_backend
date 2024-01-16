@@ -1,6 +1,7 @@
 package io.github.wxqdb_backend.function;
 
 import io.github.wxqdb_backend.bpulstree.BPlusTree;
+import io.github.wxqdb_backend.controller.tableStructure.SqlResult;
 import org.dom4j.*;
 import org.dom4j.io.SAXReader;
 
@@ -107,25 +108,25 @@ public class SelectDataFromTable {
 
     }
 
-    public static String selectWithMultipleTableWithReturn(String dbName, List<String> tbNames, List<String> columns, List<String> condition) throws DocumentException {
+    public static SqlResult selectWithMultipleTableWithReturn(String dbName, List<String> tbNames, List<String> columns, List<String> condition) throws DocumentException {
         //数据库是否为空
         if (IsLegal.isDatabaseEmpty()) {
-            return "数据库为空";
+            return new SqlResult("数据库为空");
         }
         List<File> config_files = new ArrayList<>();//将所有表的配置文件存入一个集合中，和表的list是一一对应的关系
         for (String tbName : tbNames) {
             File config_file = IsLegal.isTable(dbName, tbName);
             if (config_file == null) {
-                return "表为空";
+                return new SqlResult("表不存在");
             }
             config_files.add(config_file);
         }
         //列名称为空，则查询语句为select * from 表名/select * from 表名 where 列名称=列值
-        String result="";
+        SqlResult result;
         if (columns == null) {
             //条件为空，则查询语句为select * from 表名
             if (condition == null) {
-                return "条件为空";
+                return new SqlResult("列为空");
             }
             //条件不为空，则查询语句为select * from 表名 where 列名称=列值
             else {
@@ -136,10 +137,10 @@ public class SelectDataFromTable {
         }
         else {
             if (condition.isEmpty()) {
-                return "条件为空";
+                return new SqlResult("条件为空");
             }
             else {
-                result=selectAllFromTbWithMultiTable(dbName, tbNames, condition,columns);
+                result= selectAllFromTbWithMultiTable(dbName, tbNames, condition,columns);
             }
         }
 
@@ -150,16 +151,16 @@ public class SelectDataFromTable {
 
     }
 
-    public static String selectWithReturn(String dbName, String tbName, List<String> columns, List<String> condition) throws DocumentException {
+    public static SqlResult selectWithReturn(String dbName, String tbName, List<String> columns, List<String> condition) throws DocumentException {
 
         //数据库是否为空
         if (IsLegal.isDatabaseEmpty()) {
-            return "数据库不存在";
+            return new SqlResult("数据库为空");
         }
         //表是否存在
         File config_file = IsLegal.isTable(dbName, tbName);
         if (config_file == null) {
-            return "表不存在";
+            return new SqlResult("表不存在");
         }
 
         //列名称为空，则查询语句为select * from 表名/select * from 表名 where 列名称=列值
@@ -265,10 +266,9 @@ public class SelectDataFromTable {
     }
 
 
-    public static String selectFromTbWithReturn(String dbName, String tbName) throws DocumentException {
+    public static SqlResult selectFromTbWithReturn(String dbName, String tbName) throws DocumentException {
         //若表存在，则得到最后一张子表的下标
         String file_num = IsLegal.lastFileName(dbName, tbName);
-
         for (int j = Integer.parseInt(file_num); j >= 0; j--) {
             String num = "" + j;
             File file = new File("./mydatabase/" + dbName + "/" + tbName + "/" + tbName + num + ".xml");
@@ -279,17 +279,24 @@ public class SelectDataFromTable {
             Element rootElement = document.getRootElement();
             //获得节点名为tbName的节点List
             List<Node> nodes = rootElement.selectNodes(tbName);
-            StringBuilder result = new StringBuilder();
+
+            //创建columns和map,为sqlResult做准备
+            List<String> columns = new ArrayList<>();
+            List<Map<String, String>> attributeValueMapList = new ArrayList<>();
+            List<Attribute> list=((Element)nodes.get(0)).attributes();
+            for(Attribute attribute : list){
+                columns.add(attribute.getName());//获取所有column的值
+            }
             for (Node node : nodes) {
                 Element elementNode = (Element) node;
-                List<Attribute> list = elementNode.attributes();
-                for (Attribute attribute : list) {
-                    System.out.print(attribute.getName() + "=" + attribute.getText() + " ");
-                    result.append(attribute.getName()).append("=").append(attribute.getText());
+                List<Attribute> attributes = elementNode.attributes();
+                Map<String, String> att = new HashMap<>();
+                for (Attribute attribute : attributes) {
+                    att.put(attribute.getName(), attribute.getText());
                 }
-                result.append("\n");
+                attributeValueMapList.add(att);
             }
-            return result.toString();
+             return new SqlResult(columns, attributeValueMapList);
         }
         return null;//TODO:这边还要做一些处理
     }
@@ -344,7 +351,7 @@ public class SelectDataFromTable {
 
     }
 
-    public static String selectAllFromTbWithMultiTable(String dbName, List<String> tbNames, List<String> tmp1) throws DocumentException {
+    public static SqlResult selectAllFromTbWithMultiTable(String dbName, List<String> tbNames, List<String> tmp1) throws DocumentException {
         //若表存在，则得到表的最后一个文件下标
         List<File> files = new ArrayList<>();
         for (String tbName : tbNames) {//获取所有的文件
@@ -383,18 +390,25 @@ public class SelectDataFromTable {
                     }
                 }
             }
-        String resultstring="";//把最终结果转化为String
-        //把List全部连起来
+        List<Map<String,String>> attributeValueResultMapList = new ArrayList<>();
+            List<String> columns = new ArrayList<>();
+            boolean completeColumnsFind =false;
         for(List<String> item:result){
+            Map<String,String> attributeValueResultMap = new HashMap<>();//临时变量
             for(String singleAttributeValue:item){
-                resultstring+=singleAttributeValue+" ";
+                String[] compare = singleAttributeValue.split("=");
+                attributeValueResultMap.put(compare[0],compare[1]);//将列名和值传入map
+                if(!completeColumnsFind){
+                    columns.add(compare[0]);//将所有列名存起来
+                }
             }
-            resultstring+="\n";
+            completeColumnsFind = true;
+            attributeValueResultMapList.add(attributeValueResultMap);
         }
-        return resultstring;
+        return new SqlResult(columns,attributeValueResultMapList);
     }
 
-    public static String selectAllFromTbWithMultiTable(String dbName, List<String> tbNames, List<String> tmp1,List<String> columns) throws DocumentException {
+    public static SqlResult selectAllFromTbWithMultiTable(String dbName, List<String> tbNames, List<String> tmp1,List<String> columns) throws DocumentException {
         //若表存在，则得到表的最后一个文件下标
         List<File> files = new ArrayList<>();
         for (String tbName : tbNames) {//获取所有的文件
@@ -433,23 +447,28 @@ public class SelectDataFromTable {
                 }
             }
         }
-        String resultstring="";//把最终结果转化为String
+        //String resultstring="";//把最终结果转化为String
+        //封装sqlResult
         //把List全部连起来
+        List<Map<String,String>> attributeValueResultMapList = new ArrayList<>();
         for(List<String> item:result){
+            Map<String,String> attributeValueResultMap = new HashMap<>();//临时变量
             for(String singleAttributeValue:item){
                 String[] compare = singleAttributeValue.split("=");
                 if(columns.contains(compare[0])){
-                    resultstring+=singleAttributeValue+" ";
+                    //resultstring+=singleAttributeValue+" ";
+                    attributeValueResultMap.put(compare[0],compare[1]);
                 }
             }
-            resultstring+="\n";
+            //resultstring+="\n";
+            attributeValueResultMapList.add(attributeValueResultMap);//将每一个map输入到list
         }
-        return resultstring;
+        return new SqlResult(columns,attributeValueResultMapList);
     }
 
 
 
-    public static String selectAllFromTbWithReturn(String dbName, String tbName, List<String> tmp1) throws DocumentException {
+    public static SqlResult selectAllFromTbWithReturn(String dbName, String tbName, List<String> tmp1) throws DocumentException {
         //若表存在，则得到表的最后一个文件下标
         String file_num = IsLegal.lastFileName(dbName, tbName);
         //标记是否找到记录
@@ -468,11 +487,14 @@ public class SelectDataFromTable {
             Element rootElement = document.getRootElement();
 
             List<Node> nodes = rootElement.selectNodes(tbName);
-            StringBuilder result = new StringBuilder();
+            List<String> columns = GetTableColumns(tbName,dbName);
+            List<Map<String, String>> attributeValueResultMapList = new ArrayList<>();
+
             for (Node node : nodes) {
                 find = false;
                 Element node1 = (Element) node;
                 List<Attribute> list = node1.attributes();
+                Map<String, String> resultMap = new HashMap<>();
                 for (Attribute attribute : list) {
                     if (attribute.getName().equals(condition[0]) && attribute.getText().equals(condition[1])) {
                         condition_find = true;
@@ -482,16 +504,16 @@ public class SelectDataFromTable {
                 }
                 if (find) {
                     for (Attribute attribute : list) {
-                        result.append(attribute.getName()).append("=").append(attribute.getText()).append(" ");
+                        resultMap.put(attribute.getName(), attribute.getText());
                     }
-                    result.append("\n");
+                    attributeValueResultMapList.add(resultMap);
                 }
 
             }
-            return result.toString();
+            return new SqlResult(columns,attributeValueResultMapList);
         }
         if (!condition_find) {
-            return "未找到记录";
+            return new SqlResult("未找到记录");
         }
         return null;//TODO:这边还要做一些处理
     }
@@ -536,7 +558,7 @@ public class SelectDataFromTable {
         }
     }
 
-    public static String selectFromTbWithReturn(String dbName, String tbName, List<String> tmp1) throws DocumentException {
+    public static SqlResult selectFromTbWithReturn(String dbName, String tbName, List<String> tmp1) throws DocumentException {
         //若表存在，则得到表的最后一个文件下标
         String file_num = IsLegal.lastFileName(dbName, tbName);
         //标记是否找到列
@@ -550,27 +572,34 @@ public class SelectDataFromTable {
             Document document = reader.read(file);
             Element rootElement = document.getRootElement();
 
+
+            List<String> columns = new ArrayList<>();
+            List<Map<String, String>> attributeValueMapList = new ArrayList<>();
             //遍历所有节点
             List<Node> nodes = rootElement.selectNodes(tbName);
-            String result = "";
+            //String result = "";
             for (Node node : nodes) {
                 Element node1 = (Element) node;
                 List<Attribute> list = node1.attributes();
+                Map<String, String> attributeValueMap = new HashMap<>();
                 for (Attribute attribute : list) {
                     for (String s : tmp1) {
                         if (attribute.getName().equals(s)) {
                             columns_find = true;
-                            result += attribute.getName() + "=" + attribute.getText() + " ";
+                            if(!columns.contains(attribute.getName())){
+                                columns.add(attribute.getName());
+                            }
+                            attributeValueMap.put(attribute.getName(), attribute.getText());
                             break;
                         }
                     }
                 }
-                result += "\n";
+                attributeValueMapList.add(attributeValueMap);
             }
-            return result;//返回结果
+            return new SqlResult(columns,attributeValueMapList);//返回结果
         }
         if (!columns_find) {
-            return "未找到相应的列";
+            return new SqlResult("未找到相应的列");
         }
         return null;//TODO:这里还需要做点
     }
@@ -631,7 +660,7 @@ public class SelectDataFromTable {
         }
     }
 
-    public static String selectFromTbWithReturn(String dbName, String tbName, List<String> tmp1, List<String> tmp2) throws DocumentException {
+    public static SqlResult selectFromTbWithReturn(String dbName, String tbName, List<String> tmp1, List<String> tmp2) throws DocumentException {
         //若表存在，则得到表的最后一个文件下标
         String file_num = IsLegal.lastFileName(dbName, tbName);
         //存where条件的condition数组
@@ -650,13 +679,16 @@ public class SelectDataFromTable {
             Element rootElement = document.getRootElement();
 
             List<Node> nodes = rootElement.selectNodes(tbName);
-            String result = "";
+
+            List<String> columns = new ArrayList<>();
+            List<Map<String, String>> attributeValueMapList = new ArrayList<>();
+            //String result = "";
             for (Node node : nodes) {
                 find1 = false;
                 Element node1 = (Element) node;
                 List<Attribute> list = node1.attributes();
-                for (Iterator i = list.iterator(); i.hasNext(); ) {
-                    Attribute attribute = (Attribute) i.next();
+                Map<String, String> attributeValueMap = new HashMap<>();
+                for (Attribute attribute : list) {
                     if (attribute.getName().equals(condition[0]) && attribute.getText().equals(condition[1])) {
                         condition_find = true;
                         find1 = true;
@@ -664,25 +696,26 @@ public class SelectDataFromTable {
                     }
                 }
                 if (find1) {
-                    for (Iterator i = list.iterator(); i.hasNext(); ) {
-                        Attribute attribute = (Attribute) i.next();
+                    for (Attribute attribute : list) {
                         for (int k = 0; k < tmp1.size(); k++) {
                             if (attribute.getName().equals(tmp1.get(k))) {
                                 element_find = true;
-                                result += attribute.getName() + "=" + attribute.getText() + " ";
+                                columns.add(attribute.getName());
+                                attributeValueMap.put(attribute.getName(), attribute.getText());
+                                //result += attribute.getName() + "=" + attribute.getText() + " ";
                                 break;
                             }
                         }
                     }
-                    result += "\n";
+                    attributeValueMapList.add(attributeValueMap);
                 }
             }
-            return result;
+            return new SqlResult(columns,attributeValueMapList);
         }
         if (!condition_find) {
-            return "未找到记录";
+            return new SqlResult("未找到记录");
         }
-        return "未找到列";
+        return new SqlResult("未找到列");
     }
 
 
@@ -845,7 +878,7 @@ public class SelectDataFromTable {
 
     }
 
-    public static String selectWithIndexAndReturn(String dbName, String tbName, List<String> tmp1) throws DocumentException {
+    public static SqlResult selectWithIndexAndReturn(String dbName, String tbName, List<String> tmp1) throws DocumentException {
         //存where条件的condition数组
         String[] condition = tmp1.get(1).split("=");
         int key = Integer.parseInt(condition[1]);
@@ -861,28 +894,31 @@ public class SelectDataFromTable {
         Element rootElement = document.getRootElement();
 
         List<Node> nodes = rootElement.selectNodes(tbName);
-        String result = "";
+        List<String> columns = GetTableColumns(tbName,dbName);
+        List<Map<String, String>> attributeValueResultMapList = new ArrayList<>();
+
+        //String result = "";
         for (Node node : nodes) {
             Element node1 = (Element) node;
             List<Attribute> list = node1.attributes();
-            for (Iterator i = list.iterator(); i.hasNext(); ) {
-                Attribute attribute = (Attribute) i.next();
+            Map<String, String> attributeValueResultMap = new HashMap<>();
+            for (Attribute attribute : list) {
                 if (attribute.getName().equals(condition[0]) && attribute.getText().equals(condition[1])) {
                     condition_find = true;
                     break;
                 }
             }
             if (condition_find) {
-                for (Iterator i = list.iterator(); i.hasNext(); ) {
-                    Attribute attribute = (Attribute) i.next();
-                    result += attribute.getName() + "=" + attribute.getText() + " ";
+                for (Attribute attribute : list) {
+                    attributeValueResultMap.put(attribute.getName(),attribute.getText());
                 }
-                result += "\n";
-                break;
+                attributeValueResultMapList.add(attributeValueResultMap);
             }
         }
-        return "查询失败,未找到记录";
-
+        if(!condition_find){
+            return new SqlResult("查询失败,未找到记录");
+        }
+        return new SqlResult(columns,attributeValueResultMapList);
     }
     //获取共享的属性，并返回到一个stringList中
     public static List<String> GetSharedAttribute(String tbName1,String tbName2,Element node1,Element node2,Map<String,String> tableAttributeMap){
@@ -915,6 +951,21 @@ public class SelectDataFromTable {
         for(Attribute attribute:list2)
         {//获取第二个表的属性
                 result.add(attribute.getName()+"="+attribute.getValue());
+        }
+        return result;
+    }
+
+    //方便的方法
+    public static List<String> GetTableColumns(String tbName,String dbName) throws DocumentException {
+        File file = new File("./mydatabase/" + dbName + "/" + tbName + "/" + tbName + "-config.xml");
+        List<String> result=new ArrayList<>();
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(file);
+        Element rootElement = document.getRootElement();
+        List<Attribute> list = rootElement.attributes();
+        for(Attribute attribute:list)
+        {
+            result.add(attribute.getName());
         }
         return result;
     }

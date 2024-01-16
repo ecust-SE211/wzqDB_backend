@@ -2,6 +2,7 @@ package io.github.wxqdb_backend.controller;
 
 import com.alibaba.fastjson.JSON;
 import io.github.wxqdb_backend.controller.dto.SqlDto;
+import io.github.wxqdb_backend.controller.tableStructure.SqlResult;
 import io.github.wxqdb_backend.controller.tableStructure.TbColumn;
 import io.github.wxqdb_backend.controller.tableStructure.TbInfo;
 import io.github.wxqdb_backend.controller.tableStructure.UpdateData;
@@ -60,7 +61,8 @@ public class SqlController {
             e.printStackTrace();//异常处理，不用管
         }
         //根据SQL的body部分，调用相应的功能模块
-        return PassingParametersFactory.dealParametersWithReturn(parameter_list);
+        SqlResult result = PassingParametersFactory.dealParametersWithReturn(parameter_list);
+        return JSON.toJSONString(result);
     }
 
     @GetMapping("/{DbName}/{TbName}")

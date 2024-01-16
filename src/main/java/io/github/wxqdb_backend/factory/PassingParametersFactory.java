@@ -1,5 +1,6 @@
 package io.github.wxqdb_backend.factory;
 
+import io.github.wxqdb_backend.controller.tableStructure.SqlResult;
 import io.github.wxqdb_backend.function.*;
 import org.dom4j.DocumentException;
 
@@ -164,7 +165,7 @@ public class PassingParametersFactory {
         }
         return tmp1;
     }
-    public static String dealParametersWithReturn(List<List<String>> list) throws IOException, DocumentException {//将语句预处理后，生成的结果
+    public static SqlResult dealParametersWithReturn(List<List<String>> list) throws IOException, DocumentException {//将语句预处理后，生成的结果
         List<String> ls = new ArrayList<String>();
         ls = list.get(0);//一开始的肯定是处理语句
 //--------------------------------------------------------------------------------------------------------------------------------------
@@ -179,30 +180,31 @@ public class PassingParametersFactory {
                 bodyList.add(body.get(i));
             }
             String result = CreateTable.createTbWithReturn(UseDatabase.dbName, ls.get(1), bodyList);
-            return result;
+            SqlResult sqlResult = new SqlResult(result);
+            return sqlResult;
         }
         else if (sql_key.equals("show databases")) {
             System.out.println("3)调用方法：列出所有数据库");
             String result = ShowDatabases.showDatabaseWithReturn();
-            return result;
+            return new SqlResult(result);
         }
         else if (sql_key.equals("show tables")) {
             System.out.println("3)调用方法：列出所有表");
-            return ShowTables.showTableWithReturn(UseDatabase.dbName);
+            return new SqlResult(ShowTables.showTableWithReturn(UseDatabase.dbName));
         }
         else if (sql_key.equals("use database")) {
             System.out.println("3)调用方法：进入数据库");
             UseDatabase.dbName = ls.get(1);
             if(IsLegal.isDatabase()){
-                return "成功进入数据库"+UseDatabase.dbName;
+                return new SqlResult("成功进入数据库"+UseDatabase.dbName);
             }
                 UseDatabase.dbName = null;
-                return "数据库不存在";
+                return new SqlResult("数据库不存在");
 
         }
         else if (sql_key.equals("create database")) {
             System.out.println("3)调用方法：创建数据库");
-            return CreateDatabase.createDBWithReturn(ls.get(1));
+            return new SqlResult(CreateDatabase.createDBWithReturn(ls.get(1)));
         }
         else if (sql_key.equals("insert into")) {
             System.out.println("3)调用方法：插入数据到表");
@@ -210,7 +212,7 @@ public class PassingParametersFactory {
             List<String> tmp2 = list.get(2);
             List<String> tmp1 = list.get(1);
             //
-            return InsertDataIntoTable.insertIntoTableWithreturn(UseDatabase.dbName, ls.get(1), tmp1, tmp2);//返回运行结果
+            return new SqlResult(InsertDataIntoTable.insertIntoTableWithreturn(UseDatabase.dbName, ls.get(1), tmp1, tmp2));//返回运行结果
         }
         else if (sql_key.equals("select * from")) {
             //包含where条件
@@ -265,15 +267,15 @@ public class PassingParametersFactory {
             System.out.println("3)调用方法：更新指定记录");
 
             List<List<String>> tmp = getPararmeterList(list);
-            return UpdateDataFromTable.updateTableWithReturn(UseDatabase.dbName, list.get(0).get(1), tmp);
+            return new SqlResult(UpdateDataFromTable.updateTableWithReturn(UseDatabase.dbName, list.get(0).get(1), tmp));
         }
         else if (sql_key.equals("drop database")) {
             System.out.println("3)调用方法：删除数据库");
-            return DropDatabase.deleteDBWithReturn((ls.get(1)));
+            return new SqlResult(DropDatabase.deleteDBWithReturn((ls.get(1))));
         }
         else if (sql_key.equals("drop table")) {
             System.out.println("3)调用方法：删除表");
-            return DropTable.deleteTableWithReturn(UseDatabase.dbName, ls.get(1));
+            return new SqlResult(DropTable.deleteTableWithReturn(UseDatabase.dbName, ls.get(1)));
         }
         else if (sql_key.equals("delete from")) {
             System.out.println("3)调用方法：删除指定记录");
@@ -284,20 +286,16 @@ public class PassingParametersFactory {
                 String r = conditions.get(i);
                 conditionList.add(r);
             }
-            return DeleteDataFromTable.deleteFromTableWithReturn(UseDatabase.dbName, ls.get(1), conditionList);
+            return new SqlResult(DeleteDataFromTable.deleteFromTableWithReturn(UseDatabase.dbName, ls.get(1), conditionList));
         }
         else if (sql_key.equals("create index on")) {
             System.out.println("3)调用方法：创建索引");
-            return CreateIndex.createIndexWithReturn(UseDatabase.dbName, list.get(0).get(1), list.get(1).get(1));
+            return new SqlResult(CreateIndex.createIndexWithReturn(UseDatabase.dbName, list.get(0).get(1), list.get(1).get(1)));
         }
         else if (sql_key.equals("drop index on")) {
             System.out.println("3)调用方法：删除索引");
-            return DropIndex.dropIndexWithReturn(UseDatabase.dbName, list.get(0).get(1));
+            return new SqlResult(DropIndex.dropIndexWithReturn(UseDatabase.dbName, list.get(0).get(1)));
         }
-//        else if (sql_key.equals("create user")) {
-//            System.out.println("3)调用方法：创建新用户");
-//            CreateUser.createUser();
-//        }
-        return "error";
+        return new SqlResult("语句错误");
     }
 }
