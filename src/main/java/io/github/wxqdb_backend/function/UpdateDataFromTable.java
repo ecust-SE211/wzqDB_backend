@@ -108,6 +108,7 @@ public class UpdateDataFromTable {
             }
             count++;
         }
+        CreateTable.writeIO(file, document);
         return true;
     }
 
