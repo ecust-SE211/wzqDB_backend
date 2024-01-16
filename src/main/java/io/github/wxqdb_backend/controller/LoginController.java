@@ -15,17 +15,19 @@ public class LoginController {
 
 
     @PostMapping("/new")
-    public Boolean insert_new(@RequestParam String name,@RequestParam String password) throws DocumentException, IOException {
+    public Boolean insert_new(@RequestParam String name, @RequestParam String password) throws DocumentException, IOException {
 
-        return CreateUser.createUserWithReturn(name,password);
+        return CreateUser.createUserWithReturn(name, password);
     }
 
     @PostMapping("/login")
-    public Boolean login(@RequestParam String name,@RequestParam String password) throws DocumentException, IOException {
+    public Boolean login(@RequestParam String name, @RequestParam String password) throws DocumentException, IOException {
         //输入为空预判断
-        if(name == ""||name == null||password==""||password==null){return false;}
+        if (name == "" || name == null || password == "" || password == null) {
+            return false;
+        }
         //遍历查询是否有相同的name,如果name相同则判断密码是否相同
-        return CreateUser.Login(name,password);
+        return CreateUser.Login(name, password);
     }
 
 }
