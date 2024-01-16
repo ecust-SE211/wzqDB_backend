@@ -21,7 +21,7 @@ public class WxqDbBackendApplication {
 
     public static void main(String[] args) throws IOException, DocumentException
     {
-        //SpringApplication.run(WxqDbBackendApplication.class, args);
+        SpringApplication.run(WxqDbBackendApplication.class, args);
 
         if (IsLegal.need_loadIndex()) {
             CreateIndex.loadIndex();
@@ -43,6 +43,7 @@ public class WxqDbBackendApplication {
 //             */
 //            //处理分行输入的问题，就是读;号才停止;
             //sql parse
+            UseDatabase.dbName="rjjsss";
             if (sql.equals("help")) {
                 read_help();
                 continue;

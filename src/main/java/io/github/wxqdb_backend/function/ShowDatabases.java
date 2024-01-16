@@ -22,7 +22,7 @@ public class ShowDatabases {
                 continue;
             }
             result+=files[i].getName();
-            if(i!=0 || i!=files.length-1)
+            if(i!=0 && i!=files.length-1)
             {
                 result+="\n";
             }
