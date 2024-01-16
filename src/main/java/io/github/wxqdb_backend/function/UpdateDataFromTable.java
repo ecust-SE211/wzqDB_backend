@@ -7,7 +7,9 @@ import org.dom4j.io.SAXReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
 import io.github.wxqdb_backend.controller.tableStructure.UpdateData;
+
 public class UpdateDataFromTable {
     public static void updateTable(String dbName, String tbName, List<List<String>> tmp) throws DocumentException, IOException {
         //数据库是否为空
@@ -85,24 +87,21 @@ public class UpdateDataFromTable {
         return "更新失败，未找到记录";
     }
 
-    public static boolean updateSingleData(UpdateData data) throws DocumentException,IOException {
+    public static boolean updateSingleData(UpdateData data) throws DocumentException, IOException {
         //更改单条数据
         SAXReader reader = new SAXReader();
-        File file = new File("./mydatabase/" + data.tbName + "/" + data.tbName + "0.xml");
+        File file = new File("./mydatabase/" + data.dbName + "/" + data.tbName + "/" + data.tbName + "0.xml");
         Document document = reader.read(file);
         Element root = document.getRootElement();//获取根节点
         List<Node> nodes = root.selectNodes(data.tbName);
-        int count=0;//第几个node的计数器
-        for(Node node:nodes){
+        int count = 0;//第几个node的计数器
+        for (Node node : nodes) {
 
-            if(count== data.updataIndex)
-            {
-                Element element=(Element)node;
+            if (count == data.updataIndex) {
+                Element element = (Element) node;
                 List<Attribute> list = element.attributes();
-                for(Attribute attribute:list)
-                {//更新xml中每一条数据的值
-                    if(data.updateKeyValue.containsKey(attribute.getName()))
-                    {
+                for (Attribute attribute : list) {//更新xml中每一条数据的值
+                    if (data.updateKeyValue.containsKey(attribute.getName())) {
                         attribute.setText(data.updateKeyValue.get(attribute.getName()));
                     }
                 }
@@ -111,8 +110,6 @@ public class UpdateDataFromTable {
         }
         return true;
     }
-
-
 
 
     public static boolean update(String tbName, File file, List<List<String>> tmp, String[] tmp2) throws DocumentException, IOException {
