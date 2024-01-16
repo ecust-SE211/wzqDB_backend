@@ -3,6 +3,6 @@
 <rjjs id="int" name="string" email="verchar(20)"> 
   <rjj>0</rjj>  
   <insertables/>  
-  <index>0</index>  
+  <index>1</index>  
   <index_name>id</index_name> 
 </rjjs>

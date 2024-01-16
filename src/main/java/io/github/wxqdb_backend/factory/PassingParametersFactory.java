@@ -40,7 +40,6 @@ public class PassingParametersFactory {
             UseDatabase.dbName = ls.get(1);
             //if database illegal
             if (!IsLegal.isDatabase()) {
-                UseDatabase.dbName = null;
                 return;
             }
 

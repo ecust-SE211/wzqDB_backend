@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<rjj1s id="int" sid="int" cid="int">
-  <rjj1>0</rjj1>
-  <insertables/>
-  <index/>
-  <index_name/>
+<rjj1s id="int" sid="int" cid="int"> 
+  <rjj1>0</rjj1>  
+  <insertables/>  
+  <index>1</index>  
+  <index_name>id</index_name> 
 </rjj1s>
