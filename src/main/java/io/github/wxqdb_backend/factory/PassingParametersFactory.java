@@ -216,9 +216,20 @@ public class PassingParametersFactory {
             //包含where条件
             if (list.size() > 1) {
                 System.out.println("3)调用方法：查询指定记录");
-                String tableName = list.get(0).get(1);
-                List<String> condition = list.get(1);
-                return SelectDataFromTable.selectWithReturn(UseDatabase.dbName, tableName, null, condition);
+                if(ls.size()>2){//有多表
+                    List<String> tableNames = new ArrayList<String>();
+                    for(int i = 1;i<ls.size();i++){
+                        tableNames.add(ls.get(i));
+                    }
+                    List<String> condition=list.get(1);
+                    return SelectDataFromTable.selectWithMultipleTableWithReturn(UseDatabase.dbName,tableNames,null,condition);//返回值
+                }
+                else{
+                    String tableName = list.get(0).get(1);
+                    List<String> condition = list.get(1);
+                    return SelectDataFromTable.selectWithReturn(UseDatabase.dbName, tableName, null, condition);
+                }
+
             }
             else {
                 System.out.println("3)调用方法：查询所有记录");

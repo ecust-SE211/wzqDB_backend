@@ -44,7 +44,7 @@ public abstract class BaseSingleSqlParser {
 		{
 			sqlSegment.parse(originalSql);//对于初始的sql语句再进行正则分析,获取
 			list.add(sqlSegment.getBodyPieces());//获取真正有用的部分
-			System.out.println(sqlSegment.getBodyPieces());
+			//System.out.println(sqlSegment.getBodyPieces());
 		}
 		return list;
 	}

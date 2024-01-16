@@ -38,7 +38,7 @@ public class SqlController {
         String sql = sqlDto.getSql();
         System.out.println("sql:" + sql);
         if (sql.equals("help;")) {
-            Help.read_helpWithReturn();
+            return Help.read_helpWithReturn();
         }
 
         if (sql.lastIndexOf(";") != sql.length() - 1) {

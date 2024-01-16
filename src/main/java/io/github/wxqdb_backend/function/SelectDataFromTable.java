@@ -436,9 +436,9 @@ public class SelectDataFromTable {
         String resultstring="";//把最终结果转化为String
         //把List全部连起来
         for(List<String> item:result){
-            System.out.println(item);
             for(String singleAttributeValue:item){
-                if(columns.contains(singleAttributeValue)){
+                String[] compare = singleAttributeValue.split("=");
+                if(columns.contains(compare[0])){
                     resultstring+=singleAttributeValue+" ";
                 }
             }
