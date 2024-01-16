@@ -17,7 +17,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/sql")
 public class SqlController {
-
     @PostMapping("/execute")
     public String execute(@RequestBody SqlDto sqlDto) throws DocumentException, IOException {
 //            /*
@@ -32,7 +31,7 @@ public class SqlController {
         //sql parse
         String sql = sqlDto.getSql();
         System.out.println("sql:" + sql);
-        if (sql.equals("help;")||sql.equals("\nhelp;")) {
+        if (sql.equals("help;") || sql.equals("\nhelp;")) {
             return Help.read_helpWithReturn();
         }
 
@@ -45,7 +44,7 @@ public class SqlController {
         sql = sql.toLowerCase();//全部转为小写
         sql = sql.replaceAll("\\s+", " ");// 将sql中的连续空白字符替换为一个空格
         sql = sql.substring(0, sql.lastIndexOf(";"));// 去除SQL语句末尾的分号
-        sql = "" + sql + " ENDOFSQL";
+        sql = sql + " ENDOFSQL";
         System.out.println("1)SQL预处理结果: " + sql);
         List<List<String>> parameter_list = new ArrayList<List<String>>();//缓存sql body信息的list
         //将预处理后的SQL语句匹配SQL正则表达式，返回含有SQL的body信息的List
@@ -55,27 +54,28 @@ public class SqlController {
             e.printStackTrace();//异常处理，不用管
         }
         //根据SQL的body部分，调用相应的功能模块
-        SqlResult result = PassingParametersFactory.dealParametersWithReturn(parameter_list);
+        SqlResult result = null;
+        if (parameter_list != null) {
+            result = PassingParametersFactory.dealParametersWithReturn(parameter_list);
+        }
         return JSON.toJSONString(result);
     }
 
     @GetMapping("/{DbName}/{TbName}")
-    public String GetTableData(@PathVariable String DbName, @PathVariable String TbName) throws DocumentException, IOException
-    {
-        List<Map<String, String>> data = SelectDataFromTable.selectFromTbWithReturnAllData(DbName,TbName);
+    public String GetTableData(@PathVariable String DbName, @PathVariable String TbName) throws DocumentException, IOException {
+        List<Map<String, String>> data = SelectDataFromTable.selectFromTbWithReturnAllData(DbName, TbName);
         return JSON.toJSONString(data);
     }
+
     @GetMapping("/{DbName}")
-    public String GetAllTableData(@PathVariable String DbName) throws DocumentException, IOException{
-        List<TbInfo> data= ShowTables.showTableWithStruct(DbName);
+    public String GetAllTableData(@PathVariable String DbName) throws DocumentException, IOException {
+        List<TbInfo> data = ShowTables.showTableWithStruct(DbName);
         return JSON.toJSONString(data);
     }
 
     @PostMapping("/update")
-    public Boolean UpdateTableData(@RequestBody UpdateData data) throws DocumentException, IOException
-    {
-        Boolean result = UpdateDataFromTable.updateSingleData(data);
-        return result;
+    public Boolean UpdateTableData(@RequestBody UpdateData data) throws DocumentException, IOException {
+        return UpdateDataFromTable.updateSingleData(data);
     }
     @PostMapping("/delete")
     public Boolean DeleteTableData(@RequestBody DeleteData data) throws DocumentException, IOException
