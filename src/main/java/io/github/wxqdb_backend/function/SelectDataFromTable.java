@@ -69,7 +69,7 @@ public class SelectDataFromTable {
             return;
         }
         List<File> config_files = new ArrayList<>();//将所有表的配置文件存入一个集合中，和表的list是一一对应的关系
-        for(String tbName:tbNames){
+        for (String tbName : tbNames) {
             File config_file = IsLegal.isTable(dbName, tbName);
             if (config_file == null) {
                 return;
@@ -86,16 +86,9 @@ public class SelectDataFromTable {
             }
             //条件不为空，则查询语句为select * from 表名 where 列名称=列值
             else {
-                String[] key_value = condition.get(1).split("=");//获取等于号的两边
-
+                //每一个key_value的左边为一个表的一个attribute的名字，为XXX.XXX的形式
                 //如果表没有建立主键索引或者不是通过主键查询，调用未创建索引的方法
 
-//                if (!IsLegal.hasIndex(dbName, tbName) || !IsLegal.isIndex(config_file, key)) {
-//                    selectAllFromTb(dbName, tbName, condition);
-//                } else {
-//                    System.out.println("带索引的查询");
-//                    selectWithIndex(dbName, tbName, condition);
-//                }
             }
         }
         //列名称不为空，则查询语句为select 列名称1，列名称2 from 表名 where 列名称=列值/select 列名称1，列名称2 from 表名
@@ -182,6 +175,7 @@ public class SelectDataFromTable {
             }
         }
     }
+
     public static void selectFromTbMultiTable(String dbName, String tbName) throws DocumentException {
         //若表存在，则得到最后一张子表的下标
         String file_num = IsLegal.lastFileName(dbName, tbName);
@@ -207,6 +201,7 @@ public class SelectDataFromTable {
             }
         }
     }
+
     public static List<Map<String, String>> selectFromTbWithReturnAllData(String dbName, String tbName) throws DocumentException {
         //若表存在，则得到最后一张子表的下标
         String file_num = IsLegal.lastFileName(dbName, tbName);
@@ -317,6 +312,63 @@ public class SelectDataFromTable {
         }
 
     }
+
+    public static void selectAllFromTbWithMultiTable(String dbName, List<String> tbNames, List<String> tmp1) throws DocumentException {
+        //若表存在，则得到表的最后一个文件下标
+        //标记是否找到记录
+        boolean condition_find = false;
+        boolean find;
+        //存where条件的condition数组
+
+
+        List<File> files = new ArrayList<>();
+        for (String tbName : tbNames) {//获取所有的文件
+            File file = new File("./mydatabase/" + dbName + "/" + tbName + "/" + tbName + 0 + ".xml");
+            files.add(file);
+        }
+        String[] conditions = tmp1.get(1).split("=");
+        Map<String, String> tableAttributeKeyMap = new HashMap<>();
+        for (String condition : conditions) {
+            String[] temp = condition.split("\\.");//表和相应的列名
+            tableAttributeKeyMap.put(temp[0], temp[1]);//将表和相应的列名字放进map，作为后续的判断条件
+        }
+        //解析xml，暂时就两张表
+        for (File file : files) {
+
+        }
+        SAXReader reader = new SAXReader();
+        //Document document = reader.read(file);
+        //Element rootElement = document.getRootElement();
+
+//            List<Node> nodes = rootElement.selectNodes(tbName);
+//
+//            for (Node node : nodes) {
+//                find = false;
+//                Element node1 = (Element) node;
+//                List<Attribute> list = node1.attributes();
+//                for (Attribute attribute : list) {
+//                    if (attribute.getName().equals(condition[0]) && attribute.getText().equals(condition[1])) {
+//                        condition_find = true;
+//                        find = true;
+//                        break;
+//                    }
+//                }
+//                if (find) {
+//                    for (Attribute attribute : list) {
+//                        System.out.print(attribute.getName() + "=" + attribute.getText() + " ");
+//                    }
+//                    System.out.println();
+//                }
+
+    }
+
+
+//        if (!condition_find) {
+//            System.out.println("未找到该记录");
+//            return;
+//        }
+//}
+
 
     public static String selectAllFromTbWithReturn(String dbName, String tbName, List<String> tmp1) throws DocumentException {
         //若表存在，则得到表的最后一个文件下标

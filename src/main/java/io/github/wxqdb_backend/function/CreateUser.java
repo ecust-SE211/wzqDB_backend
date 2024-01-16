@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class CreateUser {
     public static void createUser() throws DocumentException, IOException {
         //打开user表,获得所有user节点
-        File file=new File("./mydatabase/user/user.xml");
+        File file=new File("./mydatabase/wzqdb/user/user.xml");
         SAXReader saxReader=new SAXReader();
         Document document=saxReader.read(file);
         List<Node> list=  document.getRootElement().selectNodes("user");
@@ -42,5 +42,44 @@ public class CreateUser {
         document.getRootElement().addElement("user").addAttribute("id",list.size()+1+"").addAttribute("name",username).addAttribute("password",password);
         CreateTable.writeIO(file,document);
         System.out.println("新用户"+username+"创建成功");
+    }
+
+    public static boolean createUserWithReturn(String username,String password) throws DocumentException, IOException {
+        //打开user表,获得所有user节点
+        File file=new File("./mydatabase/wzqdb/user/user.xml");
+        SAXReader saxReader=new SAXReader();
+        Document document=saxReader.read(file);
+        List<Node> list=  document.getRootElement().selectNodes("user");
+            //判断用户名是否存在
+            for (Node node : list) {
+                Element element = (Element) node;
+                Attribute name = element.attribute("name");
+                if (name.getText().equals(username)) {
+                    return false;
+                }
+            }
+        document.getRootElement().addElement("user").addAttribute("id",list.size()+1+"").addAttribute("name",username).addAttribute("password",password);
+        CreateTable.writeIO(file,document);
+        return true;
+    }
+
+
+    public static boolean Login(String username,String password) throws DocumentException, IOException {
+
+        File file=new File("./mydatabase/wzqdb/user/user.xml");
+        SAXReader saxReader=new SAXReader();
+        Document document=saxReader.read(file);
+        List<Node> list=  document.getRootElement().selectNodes("user");
+        //判断用户名是否存在
+        for (Node node : list) {
+            Element element = (Element) node;
+            Attribute name = element.attribute("name");
+            if (name.getText().equals(username)) {
+                if(element.attribute("password").getText().equals(password)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
