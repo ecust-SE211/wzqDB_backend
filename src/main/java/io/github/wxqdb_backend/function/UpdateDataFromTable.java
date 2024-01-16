@@ -1,5 +1,6 @@
 package io.github.wxqdb_backend.function;
 
+import com.alibaba.fastjson.JSON;
 import io.github.wxqdb_backend.bpulstree.BPlusTree;
 import org.dom4j.*;
 import org.dom4j.io.SAXReader;
@@ -94,10 +95,11 @@ public class UpdateDataFromTable {
         Document document = reader.read(file);
         Element root = document.getRootElement();//获取根节点
         List<Node> nodes = root.selectNodes(data.tbName);
+        System.out.println(JSON.toJSONString(data));
         int count = 0;//第几个node的计数器
         for (Node node : nodes) {
 
-            if (count == data.updataIndex) {
+            if (count == data.updateIndex) {
                 Element element = (Element) node;
                 List<Attribute> list = element.attributes();
                 for (Attribute attribute : list) {//更新xml中每一条数据的值
