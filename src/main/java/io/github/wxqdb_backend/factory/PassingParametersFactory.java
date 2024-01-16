@@ -13,9 +13,9 @@ public class PassingParametersFactory {
 
     public static void dealParameters(List<List<String>> list) throws IOException, DocumentException {//将语句预处理后，生成的结果
         List<String> ls = new ArrayList<String>();
-        ls = list.get(0);//一开始的肯定是处理语句
+        ls = list.get(0);
 //--------------------------------------------------------------------------------------------------------------------------------------
-        String sql_key = ls.get(0);
+        String sql_key = ls.get(0);//一开始的肯定是处理语句
 
         if (sql_key.equals("create table")) {
             System.out.println("3)调用方法：创建表");
@@ -62,9 +62,20 @@ public class PassingParametersFactory {
             //包含where条件
             if (list.size() > 1) {
                 System.out.println("3)调用方法：查询指定记录");
-                String tableName = list.get(0).get(1);
-                List<String> condition = list.get(1);
-                SelectDataFromTable.select(UseDatabase.dbName, tableName, null, condition);
+                if(ls.size()>2){//有多表
+                    List<String> tableNames = new ArrayList<String>();
+                    for(int i = 1;i<ls.size();i++){
+                        tableNames.add(ls.get(i));
+                    }
+                    List<String> condition=list.get(1);
+
+                }
+                else{
+                    String tableName = list.get(0).get(1);
+                    List<String> condition = list.get(1);
+                    SelectDataFromTable.select(UseDatabase.dbName, tableName, null, condition);
+                }
+
 
             }
             else {

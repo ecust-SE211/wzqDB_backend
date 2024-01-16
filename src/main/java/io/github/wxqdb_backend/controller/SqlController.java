@@ -25,7 +25,6 @@ public class SqlController {
 
     @PostMapping("/execute")
     public String execute(@RequestBody SqlDto sqlDto) throws DocumentException, IOException {
-        //System.out.println("请输入SQL语句：（您可以输入help以查询SQL语句帮助）");
 //            /*
 //             * 预处理:获得语句;
 //             * 处理前后空格;

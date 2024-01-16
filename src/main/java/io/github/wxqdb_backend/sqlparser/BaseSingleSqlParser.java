@@ -9,7 +9,7 @@ public abstract class BaseSingleSqlParser {
 	protected String originalSql;
 
 	//Sql语句片段
-	protected List<SqlSegment> segments;
+	protected List<SqlSegment> segments;//片段，sqlSegment中包含了start，end，body和很多正则表达式
 
 
 	/** *//**
@@ -21,11 +21,10 @@ public abstract class BaseSingleSqlParser {
 		//System.out.println("调用了BaseSingleSqlParser的构造函数");
 		this.originalSql=originalSql;
 		segments=new ArrayList<SqlSegment>();
-		initializeSegments();
-		//splitSql2Segment();
+		initializeSegments();//初始化
 	}
 
-	/** *//**
+	/**
 	 　* 初始化segments，强制子类实现
 	 　*
 	 　*/
@@ -41,10 +40,11 @@ public abstract class BaseSingleSqlParser {
 		List<List<String>> list=new ArrayList<List<String>>();
 
 		//System.out.println("调用了BaseSingleSqlParser的splitSql2Segment方法，用于分割sql为不同的模块");
-		for(SqlSegment sqlSegment:segments)    // int[] aaa = 1,2,3;   int a:aaa
+		for(SqlSegment sqlSegment:segments)//对于每一个正则表达式，进行对串的处理
 		{
-			sqlSegment.parse(originalSql);
-			list.add(sqlSegment.getBodyPieces());
+			sqlSegment.parse(originalSql);//对于初始的sql语句再进行正则分析,获取
+			list.add(sqlSegment.getBodyPieces());//获取真正有用的部分
+			System.out.println(sqlSegment.getBodyPieces());
 		}
 		return list;
 	}
@@ -55,7 +55,7 @@ public abstract class BaseSingleSqlParser {
 	 　*/
 	public String getParsedSql()
 	{
-		StringBuffer sb=new StringBuffer();
+		StringBuffer sb=new StringBuffer();//线程安全的字符串
 		for(SqlSegment sqlSegment:segments)
 		{
 			sb.append(sqlSegment.getParsedSqlSegment()+"n");

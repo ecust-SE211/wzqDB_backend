@@ -35,7 +35,6 @@ public class SqlSegment {
 	 　* @param segmentRegExp 表示这个Sql片段的正则表达式
 	 　* @param bodySplitPattern 用于分割body的正则表达式
 	 　*/
-
 	public SqlSegment(String segmentRegExp,String bodySplitPattern)
 	{
 		start="";
@@ -44,10 +43,9 @@ public class SqlSegment {
 		this.segmentRegExp=segmentRegExp;
 		this.bodySplitPattern=bodySplitPattern;
 		this.bodyPieces = new ArrayList<String>();
-
 	}
 
-	/** *//**
+	/**
 	 　* 从sql中查找符合segmentRegExp的部分，并赋值到start,body,end等三个属性中
 	 　* @param sql
 	 　*/
@@ -55,60 +53,31 @@ public class SqlSegment {
 	{
 		//进行测试（测试分块程序是否正确，该代码为正确的，现要测试一共分块了几次，结果都为什么？
 //-----------------------------------------------------------------------------------------------------------
-
 //		System.out.println();
 //		System.out.println("开始对sql进行分块");
 //		System.out.println("分块");
 //-----------------------------------------------------------------------------------------------------------
-
 		Pattern pattern=Pattern.compile(segmentRegExp,Pattern.CASE_INSENSITIVE);
 		Matcher matcher=pattern.matcher(sql);
 		while(matcher.find())
 		{
-			start=matcher.group(1);
+			start=matcher.group(1);//关键字
 			body=matcher.group(2);
-			end=matcher.group(3);
+			end=matcher.group(3);//关键字
+//			System.out.println("start");
 //			System.out.println(start);
-//			System.out.println(body);
+//			System.out.println("end");
 //			System.out.println(end);
-//			System.out.println();
 			parseBody();
 
 		}
-
-		//根本不需要通过遍历sql来检测分块部分。
-//		for(int i=0;i<=sql.length();i++)
-//		{
-//			String shortSql=sql.substring(0, i);
-//			//System.out.println(shortSql);
-//			Matcher matcher=pattern.matcher(shortSql);
-//			while(matcher.find())
-//			{
-//				start=matcher.group(1);
-//				body=matcher.group(2);
-//				end=matcher.group(3);
-////-----------------------------------------------------------------------------------------------------------
-////				  System.out.println(start);
-////					System.out.println(body);
-////					System.out.println(end);
-////					System.out.println();
-////-----------------------------------------------------------------------------------------------------------
-//
-//				//调用解析body部分
-//				parseBody();
-//
-//
-//			}
-//
-//		}
-
 	}
 
-	/** *//**
+	/**
 	 　* 解析body部分
 	 　*
 	 　*/
-	private void  parseBody()
+	private void  parseBody()//用针对body的分法再分块，对bodyPeces进行赋值
 	{
 		//System.out.println("分body");
 		List<String> ls=new ArrayList<String>();
@@ -146,15 +115,16 @@ public class SqlSegment {
 			ls.add(arr[i]);
 		}
 		bodyPieces = ls;
-
 	}
 
-	/** *//**
+	/**
 	 　* 取得解析好的Sql片段
 	 　* @return
 	 　*/
 	public String getParsedSqlSegment()
 	{
+		///这个函数返回一个字符串，该字符串包含一个SQL语句的解析部分。它使用一个字符串缓冲区来构建这个字符串，首先添加一个起始部分，然后循环遍历一个包含SQL语句各个部分的列表，并将每个部分添加到缓冲区中，每个部分之间添加一个换行符。最后，将缓冲区转换为字符串并返回。
+
 		StringBuffer sb=new StringBuffer();
 		sb.append(start+Crlf);
 		for(String piece:bodyPieces)
