@@ -1,5 +1,7 @@
 package io.github.wxqdb_backend.function;
 import io.github.wxqdb_backend.bpulstree.BPlusTree;
+import io.github.wxqdb_backend.controller.tableStructure.DeleteData;
+import io.github.wxqdb_backend.controller.tableStructure.SqlResult;
 import org.dom4j.*;
 import org.dom4j.io.SAXReader;
 
@@ -152,6 +154,25 @@ public class DeleteDataFromTable {
         else{
             return true;
         }
+    }
+    public static boolean deleteSingleData(DeleteData data) throws DocumentException, IOException {
+        SAXReader reader = new SAXReader();
+        File file = new File("./mydatabase/" + data.dbName + "/" + data.tbName + "/" + data.tbName + "0.xml");
+        Document document = reader.read(file);
+        Element root = document.getRootElement();//获取根节点
+        List<Node> nodes = root.selectNodes(data.tbName);
+        int count = 0;//第几个node的计数器
+        for (Node node : nodes) {
+
+            if (count == data.deleteIndex) {
+                root.remove(node);
+                //写入IO
+                CreateTable.writeIO(file,document);
+                return true;
+            }
+            count++;
+        }
+        return false;
     }
 }
 

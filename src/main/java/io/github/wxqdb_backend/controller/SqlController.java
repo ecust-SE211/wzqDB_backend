@@ -2,18 +2,12 @@ package io.github.wxqdb_backend.controller;
 
 import com.alibaba.fastjson.JSON;
 import io.github.wxqdb_backend.controller.dto.SqlDto;
-import io.github.wxqdb_backend.controller.tableStructure.SqlResult;
-import io.github.wxqdb_backend.controller.tableStructure.TbColumn;
-import io.github.wxqdb_backend.controller.tableStructure.TbInfo;
-import io.github.wxqdb_backend.controller.tableStructure.UpdateData;
+import io.github.wxqdb_backend.controller.tableStructure.*;
 import io.github.wxqdb_backend.factory.PassingParametersFactory;
 import io.github.wxqdb_backend.factory.SingleSqlParserFactory;
-import io.github.wxqdb_backend.function.SelectDataFromTable;
-import io.github.wxqdb_backend.function.ShowTables;
-import io.github.wxqdb_backend.function.UpdateDataFromTable;
+import io.github.wxqdb_backend.function.*;
 import org.dom4j.DocumentException;
 import org.springframework.web.bind.annotation.*;
-import io.github.wxqdb_backend.function.Help;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -81,6 +75,12 @@ public class SqlController {
     public Boolean UpdateTableData(@RequestBody UpdateData data) throws DocumentException, IOException
     {
         Boolean result = UpdateDataFromTable.updateSingleData(data);
+        return result;
+    }
+    @PostMapping("/delete")
+    public Boolean DeleteTableData(@RequestBody DeleteData data) throws DocumentException, IOException
+    {
+        Boolean result = DeleteDataFromTable.deleteSingleData(data);
         return result;
     }
 }
