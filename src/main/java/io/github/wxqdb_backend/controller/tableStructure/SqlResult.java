@@ -17,14 +17,14 @@ public class SqlResult
 
     public SqlResult(String message)
     {
-        ifMessage = true;
-        message = message;
-        columns =new ArrayList<>();
-        data =new ArrayList<>();
+        this.ifMessage = true;
+        this.message = message;
+        this.columns =new ArrayList<>();
+        this.data =new ArrayList<>();
     }
     public SqlResult(List<String> columns, List<Map<String, String>> data)
     {
-        ifMessage = false;
+        this.ifMessage = false;
         this.columns = columns;
         this.data = data;
     }

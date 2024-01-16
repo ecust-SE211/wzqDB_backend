@@ -1,5 +1,6 @@
 package io.github.wxqdb_backend.function;
 
+import com.alibaba.fastjson2.JSON;
 import io.github.wxqdb_backend.bpulstree.BPlusTree;
 import io.github.wxqdb_backend.controller.tableStructure.SqlResult;
 import org.dom4j.*;
@@ -87,7 +88,7 @@ public class SelectDataFromTable {
             else {
                 //每一个key_value的左边为一个表的一个attribute的名字，为XXX.XXX的形式
                 //如果表没有建立主键索引或者不是通过主键查询，调用未创建索引的方法
-                String result=selectAllFromTbWithMultiTable(dbName, tbNames, condition);
+                String result= JSON.toJSONString(selectAllFromTbWithMultiTable(dbName, tbNames, condition));
                 System.out.println(result);
             }
         }
@@ -98,7 +99,7 @@ public class SelectDataFromTable {
             else {
                 //每一个key_value的左边为一个表的一个attribute的名字，为XXX.XXX的形式
                 //如果表没有建立主键索引或者不是通过主键查询，调用未创建索引的方法
-                String result=selectAllFromTbWithMultiTable(dbName, tbNames, condition,columns);
+                String result= JSON.toJSONString(selectAllFromTbWithMultiTable(dbName, tbNames, condition,columns));
                 System.out.println(result);
             }
         }
