@@ -37,7 +37,7 @@ public class SqlController {
         //sql parse
         String sql = sqlDto.getSql();
         System.out.println("sql:" + sql);
-        if (sql.equals("help;")) {
+        if (sql.equals("help;")||sql.equals("\nhelp;")) {
             return Help.read_helpWithReturn();
         }
 

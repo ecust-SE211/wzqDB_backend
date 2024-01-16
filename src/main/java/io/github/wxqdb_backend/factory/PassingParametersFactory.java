@@ -239,11 +239,27 @@ public class PassingParametersFactory {
 
         }
         else if (sql_key.equals("select")) {
+
             System.out.println("3)调用方法：查询记录中的某些列");
-            List<String> columns=list.get(0);
-            List<String> condition = list.get(2);
-            String tableName = list.get(1).get(1);
-            return SelectDataFromTable.selectWithReturn(UseDatabase.dbName, tableName, columns, condition);
+            if(list.get(1).size()>2){
+                List<String> tableNames = new ArrayList<String>();
+                //[select, name, email]
+                //[from, rjj, rjj1]
+                //[where, rjj.id=rjj1.sid]示例的分块
+                for(int i = 1;i<list.get(1).size();i++){
+                    tableNames.add(list.get(1).get(i));
+                }
+                List<String> columns=list.get(0);//获取列名
+                List<String> condition = list.get(2);
+                return SelectDataFromTable.selectWithMultipleTableWithReturn(UseDatabase.dbName,tableNames,columns,condition);
+            }
+            else{
+                List<String> columns=list.get(0);
+                List<String> condition = list.get(2);
+                String tableName = list.get(1).get(1);
+                return SelectDataFromTable.selectWithReturn(UseDatabase.dbName, tableName, columns, condition);
+            }
+
         }
         else if (sql_key.equals("update")) {
             System.out.println("3)调用方法：更新指定记录");
