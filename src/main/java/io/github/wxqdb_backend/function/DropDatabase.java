@@ -50,10 +50,12 @@ public class DropDatabase {
         }
         //若数据库中有表存在，则提示用户
         if (file.listFiles().length > 0) {
-
-
                 File[] files = file.listFiles();
                 for (int i=0;i<files.length;i++) {
+                    File[] xmls=files[i].listFiles();
+                    for (int j=0;j<xmls.length;j++) {
+                        xmls[j].delete();
+                    }
                     files[i].delete();
                 }
                 file.delete();
