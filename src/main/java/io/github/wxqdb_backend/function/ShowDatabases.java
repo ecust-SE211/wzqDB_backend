@@ -21,7 +21,7 @@ public class ShowDatabases {
         //将所有数据库的名字存入一个String中,跳过xml结尾格式文件
         StringBuilder result = new StringBuilder();
         if (files != null) {
-            for (int i = 0; i < files.length; i++) {
+            for (int i = 0; i < files.length - 1; i++) {
                 if (files[i].getName().endsWith(".xml")) {
                     continue;
                 }
