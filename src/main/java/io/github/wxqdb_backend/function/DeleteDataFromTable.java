@@ -112,10 +112,10 @@ public class DeleteDataFromTable {
         //设置一个节点用来遍历
         Element element;
         List<Node> nodes = root.selectNodes(tbName);//获取一个表的所有节点
-        boolean find=false;
         boolean isFull=nodes.size()==10;//如果节点数大于10则表满了
         int unfindNum=0;//记录未找到的记录数
         for (Node node : nodes) {//循环遍历一张表中的节点
+            boolean find=false;
             Element currentNode=(Element)node;
             List<Attribute> lists=currentNode.attributes();//遍历节点的属性
             for (Iterator i = lists.iterator(); i.hasNext(); ) {
@@ -126,7 +126,6 @@ public class DeleteDataFromTable {
                 }
             }
             if (find) {
-
                 root.remove(currentNode);
                 //写入IO
                 CreateTable.writeIO(file,document);

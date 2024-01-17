@@ -116,7 +116,6 @@ public class UpdateDataFromTable {
 
 
     public static boolean update(String tbName, File file, List<List<String>> tmp, String[] tmp2) throws DocumentException, IOException {
-        boolean find = false;
         //创建解析器，document对象，获得根节点
         SAXReader reader = new SAXReader();
         Document document = reader.read(file);
@@ -124,6 +123,7 @@ public class UpdateDataFromTable {
         int unFindNum = 0;//未找到记录的次数
         List<Node> nodes = root.selectNodes(tbName);
         for (Node node : nodes) {
+            boolean find = false;
             Element currentNode = (Element) node;
             List<Attribute> list = currentNode.attributes();
             for (Attribute attribute : list) {
