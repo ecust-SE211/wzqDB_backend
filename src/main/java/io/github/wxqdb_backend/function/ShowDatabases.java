@@ -26,7 +26,7 @@ public class ShowDatabases {
                     continue;
                 }
                 result.append(files[i].getName());
-                if (i != 0 && i != files.length - 1) {
+                if (i != files.length - 1) {
                     result.append("\n");
                 }
             }
